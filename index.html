@@ -52,6 +52,26 @@ nav{position:sticky;top:0;z-index:100;background:var(--hero-bg);
 .nav-links a{color:rgba(180,210,228,0.6);text-decoration:none;
   font-size:0.81rem;font-weight:500;transition:color 0.15s;}
 .nav-links a:hover{color:#C8DDE8;}
+.nav-brand{white-space:nowrap;}
+.nav-toggle{display:none;background:none;border:1px solid rgba(57,122,155,0.35);
+  border-radius:6px;width:40px;height:36px;cursor:pointer;
+  flex-direction:column;justify-content:center;align-items:center;gap:5px;}
+.nav-toggle span{display:block;width:18px;height:2px;background:#C8DDE8;
+  border-radius:2px;transition:transform 0.25s,opacity 0.2s;}
+nav.open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+nav.open .nav-toggle span:nth-child(2){opacity:0;}
+nav.open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+@media(max-width:1024px){
+  .nav-toggle{display:flex;}
+  .nav-links{position:absolute;top:52px;left:0;right:0;flex-direction:column;gap:0;
+    background:var(--hero-bg);border-bottom:1px solid rgba(57,122,155,0.2);
+    box-shadow:0 12px 24px rgba(0,0,0,0.25);
+    max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
+  nav.open .nav-links{max-height:calc(100vh - 52px);overflow-y:auto;}
+  .nav-links li{border-top:1px solid rgba(57,122,155,0.12);}
+  .nav-links a{display:block;padding:0.85rem 1.5rem;font-size:0.9rem;}
+  .nav-links a:hover{background:rgba(57,122,155,0.12);}
+}
 /* LAYOUT */
 .container{max-width:1200px;margin:0 auto;padding:0 2rem;position:relative;z-index:1;}
 section{padding:5rem 0;position:relative;overflow:hidden;}
@@ -209,7 +229,6 @@ footer a{color:var(--accent-lt);text-decoration:none;}
   .grid-4{grid-template-columns:1fr 1fr;}
   .skills-grid{grid-template-columns:1fr 1fr;}
   .hero-grid{grid-template-columns:1fr;}
-  .nav-links{gap:1rem;font-size:0.74rem;}
   #hero{padding:4rem 0 3rem;}
   section{padding:3rem 0;}
   .hero-name{font-size:clamp(1.9rem,7vw,2.6rem);}
@@ -219,7 +238,6 @@ footer a{color:var(--accent-lt);text-decoration:none;}
 @media(max-width:400px){
   .grid-4{grid-template-columns:1fr;}
   .skills-grid{grid-template-columns:1fr;}
-  .nav-links{display:none;}
   .container{padding:0 0.9rem;}
   .hero-badge-col{flex-direction:column;}
 }
@@ -435,7 +453,10 @@ img{max-width:100%;height:auto;}
 <body>
 <nav>
   <a class="nav-brand" href="#hero">Arnob Roy</a>
-  <ul class="nav-links">
+  <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#research">Research</a></li>
     <li><a href="#projects">Applied</a></li>
@@ -1341,5 +1362,17 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('resize', initMobileCards);
 </script>
 
+<script>
+(function(){
+  var nav=document.querySelector('nav'), btn=nav.querySelector('.nav-toggle');
+  function setOpen(o){nav.classList.toggle('open',o);btn.setAttribute('aria-expanded',o);
+    btn.setAttribute('aria-label',o?'Close menu':'Open menu');}
+  btn.addEventListener('click',function(e){e.stopPropagation();setOpen(!nav.classList.contains('open'));});
+  nav.querySelectorAll('.nav-links a').forEach(function(a){a.addEventListener('click',function(){setOpen(false);});});
+  document.addEventListener('click',function(e){if(!nav.contains(e.target))setOpen(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(false);});
+  window.addEventListener('resize',function(){if(window.innerWidth>1024)setOpen(false);});
+})();
+</script>
 </body>
 </html>
